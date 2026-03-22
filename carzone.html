@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarZone — Edit Me</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --accent: #e8372a;
+    --accent2: #ff6b35;
+    --text: #f0ede8;
+    --muted: #666;
+    --border: #222;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+  }
+  .logo .accent { color: var(--accent); }
+  .logo-edit-hint {
+    font-family: 'Barlow', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 1px;
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+    opacity: 0;
+    transition: opacity .2s;
+    white-space: nowrap;
+  }
+  .logo:hover .logo-edit-hint { opacity: 1; }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 88vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 0 60px;
+    gap: 40px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(232,55,42,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text { z-index: 2; }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 8vw, 110px);
+    line-height: .92;
+    letter-spacing: 2px;
+    margin-bottom: 28px;
+  }
+  .hero-title .line2 { color: var(--accent); }
+
+  .hero-desc {
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #aaa;
+    max-width: 440px;
+    margin-bottom: 40px;
+  }
+
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 14px 36px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    clip-path: polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+  }
+  .btn-primary:hover { background: #c42d21; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 36px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-ghost:hover { border-color: var(--text); color: #fff; }
+
+  /* ── HERO CAR IMAGE ── */
+  .hero-img-wrap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .car-img-container {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px dashed transparent;
+    transition: border-color .2s;
+  }
+  .car-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s;
+  }
+  .car-img-container:hover img { transform: scale(1.03); }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    padding: 36px 40px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+    transition: background .2s;
+  }
+  .stat:last-child { border-right: none; }
+  .stat:hover { background: var(--surface); }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── CARS GRID ── */
+  .section {
+    padding: 100px 60px;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 2px;
+  }
+  .section-title span { color: var(--accent); }
+  .section-sub {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .cars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .car-card {
+    position: relative;
+    background: var(--surface);
+    overflow: hidden;
+    cursor: pointer;
+    group: true;
+  }
+  .car-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform .3s;
+    transform-origin: left;
+  }
+  .car-card:hover::after { transform: scaleX(1); }
+
+  .card-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s;
+  }
+  .car-card:hover .card-img { transform: scale(1.06); }
+
+  .card-body { padding: 24px 28px; }
+  .card-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .card-specs {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .card-price {
+    margin-top: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text);
+  }
+  .card-price .currency { color: var(--accent); font-size: 16px; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 3px;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px;
+    width: 90%;
+    max-width: 440px;
+    transform: translateY(20px);
+    transition: transform .25s;
+  }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .modal input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 16px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .modal input:focus { border-color: var(--accent); }
+  .modal-btns { display: flex; gap: 12px; margin-top: 8px; }
+  .modal-btns button { flex: 1; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-text > * { animation: fadeUp .7s both; }
+  .hero-text > *:nth-child(1) { animation-delay: .1s; }
+  .hero-text > *:nth-child(2) { animation-delay: .2s; }
+  .hero-text > *:nth-child(3) { animation-delay: .35s; }
+  .hero-text > *:nth-child(4) { animation-delay: .5s; }
+  .hero-img-wrap { animation: fadeUp .8s .3s both; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 60px 24px 40px; min-height: auto; gap: 40px; }
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+    .section { padding: 60px 24px; }
+    .cars-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+
+
+<nav>
+  <div class="logo" onclick="openNameModal()" title="Click to edit site name">
+    <span id="logoText1">CAR</span><span class="accent" id="logoText2">ZONE</span>
+    <div class="logo-edit-hint">✏️ CLICK TO RENAME</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">Models</a></li>
+    <li><a href="#">Performance</a></li>
+    <li><a href="#">Gallery</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="hero-eyebrow" id="heroEyebrow">Premium Automotive Experience</p>
+    <h1 class="hero-title">
+      <span class="line1" id="heroTitle1">DRIVE THE</span><br>
+      <span class="line2" id="heroTitle2">FUTURE</span>
+    </h1>
+    <p class="hero-desc" id="heroDesc">
+      Discover the world's most extraordinary automobiles. Performance, luxury, and innovation — engineered for those who refuse to settle.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-primary">Explore Models</button>
+      <button class="btn-ghost">Book a Test Drive</button>
+    </div>
+  </div>
+
+  <div class="hero-img-wrap">
+    <div class="car-img-container">
+      <!-- PALITAN ANG src ng link ng larawan mo para magbago -->
+      <img id="heroImg" src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80" alt="Hero Car">
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">320+</div><div class="stat-label">Models Available</div></div>
+  <div class="stat"><div class="stat-num">98K</div><div class="stat-label">Happy Clients</div></div>
+  <div class="stat"><div class="stat-num">15</div><div class="stat-label">Years Experience</div></div>
+  <div class="stat"><div class="stat-num">42</div><div class="stat-label">Showroom Locations</div></div>
+</div>
+
+<!-- CAR CARDS -->
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">FEATURED <span>MODELS</span></h2>
+    </div>
+    <p class="section-sub">View All →</p>
+  </div>
+  <div class="cars-grid">
+
+    <div class="car-card">
+      <img class="card-img" src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&q=80" alt="Car 1">
+      <div class="card-body">
+        <p class="card-tag">Sport</p>
+        <h3 class="card-name">Phantom GT-R</h3>
+        <p class="card-specs">V8 Twin-Turbo · 650 HP · 0-100 in 3.1s</p>
+        <p class="card-price"><span class="currency">₱</span> 4,200,000</p>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <img class="card-img" src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" alt="Car 2">
+      <div class="card-body">
+        <p class="card-tag">Luxury</p>
+        <h3 class="card-name">Velos S Class</h3>
+        <p class="card-specs">Hybrid · 480 HP · Full Autopilot Suite</p>
+        <p class="card-price"><span class="currency">₱</span> 6,800,000</p>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <img class="card-img" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80" alt="Car 3">
+      <div class="card-body">
+        <p class="card-tag">Electric</p>
+        <h3 class="card-name">Aero EV Zero</h3>
+        <p class="card-specs">Electric · 720 HP · 550km Range</p>
+        <p class="card-price"><span class="currency">₱</span> 5,500,000</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span id="footerLogo1">CAR</span><span>ZONE</span></div>
+  <p class="footer-copy">© 2025 <span id="footerName">CarZone</span>. All rights reserved.</p>
+</footer>
+
+<!-- NAME EDIT MODAL -->
+<div class="modal-overlay" id="nameModal" onclick="closeOnBackdrop(event)">
+  <div class="modal">
+    <h2>✏️ EDIT SITE NAME</h2>
+    <p>Customize the brand name shown across the website.</p>
+    <input type="text" id="namePart1" placeholder="First part (e.g. CAR)" maxlength="12">
+    <input type="text" id="namePart2" placeholder="Accent part (e.g. ZONE)" maxlength="12">
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="applyName()">Apply</button>
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openNameModal() {
+    document.getElementById('namePart1').value = document.getElementById('logoText1').textContent;
+    document.getElementById('namePart2').value = document.getElementById('logoText2').textContent;
+    document.getElementById('nameModal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('nameModal').classList.remove('active');
+  }
+
+  function closeOnBackdrop(e) {
+    if (e.target === document.getElementById('nameModal')) closeModal();
+  }
+
+  function applyName() {
+    const p1 = document.getElementById('namePart1').value.toUpperCase() || 'CAR';
+    const p2 = document.getElementById('namePart2').value.toUpperCase() || 'ZONE';
+    document.getElementById('logoText1').textContent = p1;
+    document.getElementById('logoText2').textContent = p2;
+    document.getElementById('footerLogo1').textContent = p1;
+    document.getElementById('footerName').textContent = p1 + p2;
+    document.title = p1 + p2 + ' — Edit Me';
+    closeModal();
+  }
+
+  // Enter key in modal
+  document.querySelectorAll('.modal input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') applyName(); });
+  });
+</script>
+</body>
+</html>
